@@ -62,7 +62,7 @@ function App() {
                 totalWages = {zips.TotalWages}
                 />
           ))}
-          {zipCodeOutcome.length < 5 && <bold>Not Found</bold>}
+          {zipCodeOutcome.length < 5 && <strong>Not Found</strong>}
         </div>
       </div>
     </div>
