@@ -9,7 +9,7 @@ function City({city, state, latitude, longitude, popEst, totalWages}) {
         <ul>
           <li>State: {state} </li>
           <li>Location: {latitude}, {longitude}</li>
-          <li>Population: {popEst}</li>
+          <li>Population Estimate: {popEst}</li>
           <li>Total Wages: {totalWages}</li>
         </ul>
       </div>
@@ -29,13 +29,20 @@ function ZipSearchField({handleChange, input}) {
 
 function App() {
   const [zipCode, setZipCode] = useState("");
+  const [zipCodeOutcome, setZipCodeOutcome] = useState([]);
   
   const getZipCode = (event) =>{
-      fetch("https://ctp-zip-api.herokuapp.com/")
+    const nextZipCode = event.target.value;
+    setZipCode(nextZipCode);
+    if (nextZipCode.length === 5){
+      fetch(`https://ctp-zip-api.herokuapp.com/zip/${nextZipCode}`)
           .then((res) => res.json())
-          .then((body) => {
-              setZipCode(body.results[0]);
-          })
+          .then((body) => setZipCodeOutcome(body))
+        } else{
+          setZipCodeOutcome([]);
+          console.log("invalid input");
+          <strong>Invalid</strong>;
+        }      
   };
   return (
     <div className="App">
@@ -43,10 +50,19 @@ function App() {
         <h1>Zip Code Search</h1>
       </div>
       <div className="mx-auto" style={{ maxWidth: 400 }}>
-        <ZipSearchField />
+        <ZipSearchField  value = {zipCode} handleChange = {getZipCode} />
         <div>
-          <City />
-          <City />
+          {zipCodeOutcome.map((zips) => (
+            <City 
+                city = {zips.City}
+                state = {zips.State}
+                latitude = {zips.Lat}
+                longitude = {zips.Long}
+                popEst = {zips.EstimatedPopulation}
+                totalWages = {zips.TotalWages}
+                />
+          ))}
+          {zipCodeOutcome.length < 5 && <bold>Not Found</bold>}
         </div>
       </div>
     </div>
